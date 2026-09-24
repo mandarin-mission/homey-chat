@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>粵普文化交流卡片</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: linear-gradient(135deg, #fff5eb 0%, #fef3c7 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(251, 146, 60, 0.15), 0 8px 10px -6px rgba(251, 146, 60, 0.1);
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.92); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .animate-pop {
+            animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 sm:p-6 text-slate-800">
+
+    <!-- Header -->
+    <header class="text-center my-4">
+        <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full border border-amber-200 sm:text-sm">
+            🥮 粵普文化交流
+        </span>
+        <h1 class="text-2xl sm:text-3xl font-bold text-amber-900 mt-2">情境是非題 ✕ 互動卡牌</h1>
+        <p class="text-xs sm:text-sm text-amber-700 mt-1">請舉手表示「是 ⭕️」或「否 ❌」</p>
+    </header>
+
+    <!-- Main Card Container -->
+    <main class="max-w-md w-full mx-auto my-auto">
+        <div id="questionCard" class="bg-white rounded-3xl p-6 sm:p-8 border border-amber-100 card-shadow transition-all">
+            
+            <!-- Category Badge -->
+            <div class="flex justify-center items-center mb-4">
+                <span id="categoryBadge" class="bg-orange-50 text-orange-600 text-xs font-bold px-3 py-1 rounded-lg border border-orange-100">
+                    點擊下方按鈕抽題
+                </span>
+            </div>
+
+            <!-- Question Text -->
+            <div class="min-h-[160px] flex items-center justify-center my-2 text-center">
+                <p id="questionText" class="text-xl sm:text-2xl font-bold text-slate-800 leading-relaxed">
+                    準備好了嗎？<br><span class="text-base font-normal text-slate-500 mt-2 block">按下方「抽取下一題」開始！</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-6 flex flex-col gap-3">
+            <button id="drawBtn" onclick="drawQuestion()" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-orange-500/25 active:scale-[0.98] transition text-lg flex items-center justify-center gap-2">
+                🎲 抽取下一題
+            </button>
+            <button onclick="resetQuestions()" class="w-full bg-white/80 hover:bg-white text-slate-500 font-medium py-2 rounded-xl text-xs border border-slate-200 transition">
+                🔄 重置題目
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center my-4 text-xs text-amber-800/60">
+        <p>廣東話班文化交流課專用 • 讓每個生命都被看見</p>
+    </footer>
+
+    <!-- Script Logic -->
+    <script>
+        const questions = [
+            { id: 1, category: "職場/校園", text: "在校園/職場上，我覺得『表面和諧』比『據理力爭』更好。" },
+            { id: 2, category: "情緒/心靈", text: "在香港感到孤獨或壓力大時，我主要還是靠自己撐過去。" },
+            { id: 3, category: "價值/目標", text: "比起『自由與開心』，我現階段更追求『成功與證明自己』。" },
+            { id: 4, category: "社交/防備", text: "我會優先選擇『有情緒價值/實用價值』的朋友，減少無效社交。" },
+            { id: 5, category: "現實/生活", text: "在香港生活，只要有足夠的經濟安全感，絕大多數煩惱都能解決。" },
+            { id: 6, category: "生活/健康", text: "我的生活習慣正在損害我的健康。" },
+            { id: 7, category: "理想/使命", text: "我想為這個社會帶來改變。" },
+            { id: 8, category: "溫暖/家", text: "來香港後，我覺得最溫暖的時刻，往往來自一些意想不到的小善意或陪伴。" },
+            { id: 9, category: "感恩/心態", text: "我覺得每天都值得感恩。" }
+        ];
+
+        let availableQuestions = [...questions];
+
+        function drawQuestion() {
+            if (availableQuestions.length === 0) {
+                document.getElementById('questionText').innerHTML = "🎉 所有題目已抽完！<br><span class='text-sm font-normal text-slate-500 mt-2 block'>希望今天的分享讓大家更瞭解彼此～</span>";
+                document.getElementById('categoryBadge').innerText = "完成";
+                document.getElementById('categoryBadge').className = "bg-green-50 text-green-600 text-xs font-bold px-3 py-1 rounded-lg border border-green-100";
+                document.getElementById('drawBtn').disabled = true;
+                document.getElementById('drawBtn').classList.add('opacity-50', 'cursor-not-allowed');
+                return;
+            }
+
+            const randomIndex = Math.floor(Math.random() * availableQuestions.length);
+            const drawn = availableQuestions.splice(randomIndex, 1)[0];
+
+            // Card Animation
+            const card = document.getElementById('questionCard');
+            card.classList.remove('animate-pop');
+            void card.offsetWidth; // trigger reflow
+            card.classList.add('animate-pop');
+
+            // Render Content
+            document.getElementById('questionText').innerText = drawn.text;
+            document.getElementById('categoryBadge').innerText = drawn.category;
+        }
+
+        function resetQuestions() {
+            availableQuestions = [...questions];
+            document.getElementById('questionText').innerHTML = "準備好了嗎？<br><span class='text-base font-normal text-slate-500 mt-2 block'>按下方「抽取下一題」開始破冰！</span>";
+            document.getElementById('categoryBadge').innerText = "點擊下方按鈕抽題";
+            document.getElementById('categoryBadge').className = "bg-orange-50 text-orange-600 text-xs font-bold px-3 py-1 rounded-lg border border-orange-100";
+            
+            const drawBtn = document.getElementById('drawBtn');
+            drawBtn.disabled = false;
+            drawBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+    </script>
+</body>
+</html>
